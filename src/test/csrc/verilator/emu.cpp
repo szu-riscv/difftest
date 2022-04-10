@@ -185,7 +185,7 @@ Emulator::Emulator(int argc, const char *argv[]):
   cycles(0), trapCode(STATE_RUNNING)
 {
   args = parse_args(argc, argv);
-
+  vcd_times = 0;
   // srand
   srand(args.seed);
   srand48(args.seed);
@@ -197,8 +197,6 @@ Emulator::Emulator(int argc, const char *argv[]):
   if (args.enable_jtag) {
     jtag = new remote_bitbang_t(23334);
   }
-  // init core
-  reset_ncycles(10);
 
   // init ram
   init_ram(args.image);
@@ -263,8 +261,18 @@ inline void Emulator::reset_ncycles(size_t cycles) {
     dut_ptr->reset = 1;
     dut_ptr->clock = 0;
     dut_ptr->eval();
+#if VM_TRACE == 1
+  if (enable_waveform) {
+    tfp->dump(vcd_times++);
+  }
+#endif
     dut_ptr->clock = 1;
     dut_ptr->eval();
+#if VM_TRACE == 1
+  if (enable_waveform) {
+    tfp->dump(vcd_times++);
+  }
+#endif
     dut_ptr->reset = 0;
   }
 }
@@ -288,12 +296,25 @@ inline void Emulator::single_cycle() {
     uint64_t begin = dut_ptr->io_logCtrl_log_begin;
     uint64_t end   = dut_ptr->io_logCtrl_log_end;
     bool in_range  = (begin <= cycle) && (cycle <= end);
-    if (in_range || force_dump_wave) { tfp->dump(cycle); }
+    tfp->dump(vcd_times++);
+    //if (in_range || force_dump_wave) { /*tfp->dump(cycle);*/ printf("single cycle 0 vcd_times=%ld\n", vcd_times);tfp->dump(vcd_times++);}
   }
 #endif
 
   dut_ptr->clock = 1;
   dut_ptr->eval();
+
+#if VM_TRACE == 1
+  if (enable_waveform) {
+    auto trap = difftest[0]->get_trap_event();
+    uint64_t cycle = trap->cycleCnt;
+    uint64_t begin = dut_ptr->io_logCtrl_log_begin;
+    uint64_t end   = dut_ptr->io_logCtrl_log_end;
+    bool in_range  = (begin <= cycle) && (cycle <= end);
+    tfp->dump(vcd_times++);
+    //if (in_range || force_dump_wave) { /*tfp->dump(cycle);*/ printf("single cycle 1 vcd_times=%ld\n", vcd_times); tfp->dump(vcd_times++);}
+  }
+#endif
 
 #ifdef WITH_DRAMSIM3
   axi_copy_from_dut_ptr(dut_ptr, axi);
@@ -325,6 +346,9 @@ uint64_t Emulator::execute(uint64_t max_cycle, uint64_t max_instr) {
   if(args.enable_runahead){
     runahead_init();
   }
+
+  // init core
+  reset_ncycles(10);
 
 #ifdef DEBUG_REFILL
   difftest[0]->save_track_instr(args.track_instr);
@@ -460,6 +484,8 @@ uint64_t Emulator::execute(uint64_t max_cycle, uint64_t max_instr) {
       }
     }
   }
+  // for (int i = 0 ; i < 10; i++)
+  //   single_cycle();
   // Simulation ends here, do clean up & display jobs
 #if VM_TRACE == 1
   if (enable_waveform) tfp->close();

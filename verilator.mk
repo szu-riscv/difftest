@@ -35,6 +35,7 @@ endif
 
 VEXTRA_FLAGS += -I$(abspath $(BUILD_DIR)) --x-assign unique -O3 -CFLAGS "$(EMU_CXXFLAGS) $(EMU_CXX_EXTRA_FLAGS)" -LDFLAGS "$(EMU_LDFLAGS)"
 
+EMU_CXXFLAGS += -DFIRST_INST_ADDRESS=0x80000000
 # REF SELECTION
 ifeq ($(REF),spike)
 EMU_CXXFLAGS += -DDIFF_PROXY=SpikeProxy -DFIRST_INST_ADDRESS=0x80000000
@@ -146,6 +147,8 @@ EMU_FLAGS = -s $(SEED) -b $(B) -e $(E) $(SNAPSHOT_OPTION) $(WAVEFORM) $(EMU_ARGS
 
 emu: $(EMU)
 
+emu-clean: $(EMU)
+	rm -rf $(EMU) $(BUILD_DIR)/emu-compile
 emu-run: emu
 ifneq ($(REMOTE),localhost)
 	ls build
@@ -157,4 +160,4 @@ coverage:
 	python3 scripts/coverage/coverage.py build/logs/annotated/XSSimTop.v build/XSSimTop_annotated.v
 	python3 scripts/coverage/statistics.py build/XSSimTop_annotated.v >build/coverage.log
 
-.PHONY: build_emu_local
+.PHONY: build_emu_local emu-clean
