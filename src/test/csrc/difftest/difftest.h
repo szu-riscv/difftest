@@ -71,6 +71,7 @@ typedef struct {
   uint8_t  wen;
   uint32_t wpdest;
   uint8_t  wdest;
+  uint8_t dec_type;
 } instr_commit_t;
 
 typedef struct {
@@ -383,7 +384,7 @@ protected:
   void do_first_instr_commit();
   void do_interrupt();
   void do_exception();
-  void do_instr_commit(int index);
+  int do_instr_commit(int index);
   int do_store_check();
   int do_refill_check();
   int do_golden_memory_update();

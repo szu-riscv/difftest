@@ -81,6 +81,7 @@ INTERFACE_INSTR_COMMIT {
     packet->wen      = wen;
     packet->wpdest   = wpdest;
     packet->wdest    = wdest;
+    packet->dec_type = dec_type;
   }
 }
 

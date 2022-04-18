@@ -58,7 +58,7 @@ extern unsigned long EMU_RAM_SIZE;
 #define DIFFTEST_MAX_PRF_SIZE 256
 
 // max commit width
-#define DIFFTEST_COMMIT_WIDTH 6
+#define DIFFTEST_COMMIT_WIDTH 1
 
 // max store width
 //

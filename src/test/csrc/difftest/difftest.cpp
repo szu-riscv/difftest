@@ -144,7 +144,7 @@ int Difftest::step() {
   } else {
     // TODO: is this else necessary?
     for (int i = 0; i < DIFFTEST_COMMIT_WIDTH && dut.commit[i].valid; i++) {
-      do_instr_commit(i);
+      if (do_instr_commit(i) !=0) return -1;
       dut.commit[i].valid = 0;
       num_commit++;
       // TODO: let do_instr_commit return number of instructions in this uop
@@ -211,7 +211,7 @@ void Difftest::do_exception() {
   progress = true;
 }
 
-void Difftest::do_instr_commit(int i) {
+int Difftest::do_instr_commit(int i) {
   progress = true;
   last_commit = ticks;
 
@@ -237,6 +237,17 @@ void Difftest::do_instr_commit(int i) {
   }
 #endif
 
+  // check the commit instruction whether had decode successful
+  if (dut.commit[i].dec_type == 0) {
+    display();
+    printf(ANSI_COLOR_RED "We get a invalid instruction type, maybe you haven't done the instruction!!!\n" ANSI_COLOR_RESET);
+#ifndef BASIC_DIFFTEST_ONLY
+    printf(ANSI_COLOR_RED "Please check the instruction %08x at pc %x and do it!!!\n" ANSI_COLOR_RESET, dut.commit[i].inst, dut.commit[i].pc);
+    printf(ANSI_COLOR_GREEN "Good luck to you!\n" ANSI_COLOR_RESET, dut.commit[i].inst, dut.commit[i].pc);
+#endif
+    return -1;
+  }
+
   // sync lr/sc reg status
   if (dut.lrsc.valid) {
     struct SyncState sync;
@@ -259,7 +270,7 @@ void Difftest::do_instr_commit(int i) {
       // printf("skip %x %x %x %x %x\n", dut.commit[i].pc, dut.commit[i].inst, get_commit_data(i), dut.commit[i].wpdest, dut.commit[i].wdest);
     }
     proxy->regcpy(ref_regs_ptr, DIFFTEST_TO_REF);
-    return;
+    return 0;
   }
 
   // single step exec
@@ -337,6 +348,7 @@ void Difftest::do_instr_commit(int i) {
       }
     }
   }
+  return 0;
 }
 
 void Difftest::do_first_instr_commit() {

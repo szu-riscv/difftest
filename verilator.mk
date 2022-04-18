@@ -147,8 +147,8 @@ EMU_FLAGS = -s $(SEED) -b $(B) -e $(E) $(SNAPSHOT_OPTION) $(WAVEFORM) $(EMU_ARGS
 
 emu: $(EMU)
 
-emu-clean: $(EMU)
-	rm -rf $(EMU) $(BUILD_DIR)/emu-compile
+emu-clean:
+	-rm -rf $(EMU) $(BUILD_DIR)/emu-compile
 emu-run: emu
 ifneq ($(REMOTE),localhost)
 	ls build

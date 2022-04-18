@@ -92,7 +92,8 @@ extern "C" int v_difftest_step();
     DPIC_ARG_BYTE wdest,                 \
     DPIC_ARG_LONG pc,                    \
     DPIC_ARG_INT  instr,                 \
-    DPIC_ARG_LONG wdata                  \
+    DPIC_ARG_LONG wdata,                 \
+    DPIC_ARG_BYTE dec_type               \
   )
 
 // v_difftest_BasicTrapEvent
