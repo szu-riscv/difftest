@@ -243,8 +243,8 @@ int Difftest::do_instr_commit(int i) {
     printf(ANSI_COLOR_RED "We get a invalid instruction type, maybe you haven't done the instruction!!!\n" ANSI_COLOR_RESET);
 #ifndef BASIC_DIFFTEST_ONLY
     printf(ANSI_COLOR_RED "Please check the instruction %08x at pc %x and do it!!!\n" ANSI_COLOR_RESET, dut.commit[i].inst, dut.commit[i].pc);
-    printf(ANSI_COLOR_GREEN "Good luck to you!\n" ANSI_COLOR_RESET, dut.commit[i].inst, dut.commit[i].pc);
 #endif
+    printf(ANSI_COLOR_GREEN "Good luck to you!\n" ANSI_COLOR_RESET);
     return -1;
   }
 
