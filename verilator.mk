@@ -88,7 +88,7 @@ endif
 # --trace
 VERILATOR_FLAGS =                   \
   --top-module $(EMU_TOP)           \
-  --compiler g++                    \
+  --compiler gcc                    \
   +define+VERILATOR=1               \
   +define+DIFFTEST                  \
   +define+PRINTF_COND=1             \
