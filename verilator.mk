@@ -146,6 +146,11 @@ $(error NOOP_HOME is not set)
 endif
 EMU_FLAGS = -s $(SEED) -b $(B) -e $(E) $(SNAPSHOT_OPTION) $(WAVEFORM) $(EMU_ARGS)
 
+
+ifeq ($(EMU_TRACE), 1)
+EMU_ARGS += --dump-wave
+endif
+
 emu: $(EMU)
 
 emu-clean:
