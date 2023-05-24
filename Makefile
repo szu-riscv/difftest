@@ -80,10 +80,10 @@ $(REF_SO):
 	$(MAKE) -C $(NEMU_HOME) riscv64-xs-ref_defconfig
 	$(MAKE) -C $(NEMU_HOME)
 
-# ifndef SPIKE_HOME
-# $(error SPIKE_HOME is not set)
-# endif
-# REF_SO := $(SPIKE_HOME)/build/riscv64-spike-so
+ifndef SPIKE_HOME
+$(error SPIKE_HOME is not set)
+endif
+REF_SO := $(SPIKE_HOME)/build/riscv64-spike-so
 
 
 SEED ?= $(shell shuf -i 1-10000 -n 1)
